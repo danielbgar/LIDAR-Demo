@@ -8,7 +8,7 @@ import pygame
 
 pygame.init()
 clock = pygame.time.Clock()
-pygame.key.set_repeat(10,10)
+pygame.key.set_repeat(100,100)
 
 car_template ='&{}:{}&'
 
@@ -21,7 +21,7 @@ def stop():
 
 wasd_dict = {'w':'f','s':'b','a':'l','d':'r'}
 
-step_time = 10.0 # miliseconds
+step_time = 100.0 # miliseconds
 
 class car_controller():
     def __init__(self,ser,step_time):
@@ -35,14 +35,20 @@ class car_controller():
         34cm ~150
         44cm ~ 200
         '''
-        print(distance)
-        speed = 3.8 * abs(distance) + 30
-        sign = distance/abs(distance)
-        speed = max(speed,100)
-        speed = min(speed,255)
-        speed = -speed*sign
-        write_ser(speed,speed)
-        time.sleep(step_time/1000.)
+
+        if distance == 0 :
+            speed = 0
+            write_ser(speed,speed)
+            #time.sleep(step_time/1000.)
+        else :
+            print(distance)
+            speed = 3.8 * abs(distance) + 30
+            sign = distance/abs(distance)
+            speed = max(speed,100)
+            speed = min(speed,255)
+            speed = -speed*sign
+            write_ser(speed,speed)
+            #time.sleep(1.)
 
     def turn(self,angle=math.pi/4):
         '''
@@ -59,7 +65,7 @@ class car_controller():
         speed = min(speed,255)   
         speed = speed*sign
         write_ser(-speed,speed)
-        time.sleep(step_time)
+        #time.sleep(step_time)
     def text_inst(self,direction,distance):
         distance = abs(distance)
         if 'f' in direction:
@@ -103,24 +109,28 @@ if __name__ == "__main__":
     while playing:
         #print("Press a Key: ")
         for event in pygame.event.get() :
+            #print("press keydown: ")
             if event.type == pygame.QUIT :
                 playing = False
             if event.type == pygame.KEYDOWN :
                 if event.key == pygame.K_w :
                     print("w")
-                    car_ctrl.forward(.0001)
+                    car_ctrl.forward(1)
                 if event.key == pygame.K_d :
                     print("d")
-                    car_ctrl.turn(.01)
+                    car_ctrl.turn(.1)
                 if event.key == pygame.K_s :
                     print("s")
-                    car_ctrl.forward(-.0001)
+                    car_ctrl.forward(-1)
                 if event.key == pygame.K_a :
                     print("a")
-                    car_ctrl.turn(-.01)
+                    car_ctrl.turn(-.1)
                 if event.key == pygame.K_1 :
                     playing = False
+
                 
+        clock.tick(100)
+
+
 
 pygame.quit()
-clock.tick(10)
